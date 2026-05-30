@@ -1479,6 +1479,25 @@ app.put('/api/profile', authMiddleware, (req, res) => {
   res.json({ success: true, updatedAt: now });
 });
 
+// ── E2E public key routes ──────────────────────────────────────────────────────
+
+// Upload own public key
+app.put('/api/pubkey', authMiddleware, (req, res) => {
+  const key = String(req.body?.publicKey ?? '').trim();
+  if (!key || key.length > 200) return res.status(400).json({ error: 'invalid_public_key' });
+  db.prepare('UPDATE users SET public_key = ? WHERE member_number = ?').run(key, req.memberNumber);
+  res.json({ ok: true });
+});
+
+// Fetch another user's public key (auth required — not publicly enumerable)
+app.get('/api/pubkey/:memberNumber', authMiddleware, (req, res) => {
+  const num = parseInt(req.params.memberNumber, 10);
+  if (!Number.isFinite(num)) return res.status(400).json({ error: 'invalid' });
+  const row = db.prepare('SELECT public_key FROM users WHERE member_number = ?').get(num);
+  if (!row) return res.status(404).json({ error: 'not_found' });
+  res.json({ publicKey: row.public_key ?? null });
+});
+
 // ── Trusted contacts routes ────────────────────────────────────────────────────
 
 // List trusted contacts

@@ -243,6 +243,7 @@ db.exec(`
 try { db.exec('ALTER TABLE users ADD COLUMN availability TEXT NOT NULL DEFAULT \'online\''); } catch {}
 try { db.exec('ALTER TABLE users ADD COLUMN dnd_start TEXT'); } catch {}
 try { db.exec('ALTER TABLE users ADD COLUMN dnd_end TEXT'); } catch {}
+try { db.exec('ALTER TABLE users ADD COLUMN public_key TEXT'); } catch {}
 
 // parent_message_ref for reply threading
 try { db.exec('ALTER TABLE messages ADD COLUMN parent_message_ref TEXT'); } catch {}
